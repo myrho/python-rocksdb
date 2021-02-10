@@ -61,4 +61,22 @@ void init_option(py::module & m) {
     .def_readwrite("exclusive_manual_compaction", &rocksdb::CompactRangeOptions::exclusive_manual_compaction)
     .def_readwrite("change_level", &rocksdb::CompactRangeOptions::change_level)
     .def_readwrite("target_level", &rocksdb::CompactRangeOptions::target_level);
+
+  py::class_<rocksdb::EnvOptions>(m, "EnvOptions")
+    .def(py::init<>())
+    .def(py::init<const DBOptions&>())
+    .def_readwrite("use_mmap_reads", &rocksdb::EnvOptions::use_mmap_reads)
+    .def_readwrite("use_mmap_writes", &rocksdb::EnvOptions::use_mmap_writes)
+    .def_readwrite("use_direct_reads", &rocksdb::EnvOptions::use_direct_reads)
+    .def_readwrite("use_direct_writes", &rocksdb::EnvOptions::use_direct_writes)
+    .def_readwrite("allow_fallocate", &rocksdb::EnvOptions::allow_fallocate)
+    .def_readwrite("set_fd_cloexec", &rocksdb::EnvOptions::set_fd_cloexec)
+    .def_readwrite("bytes_per_sync", &rocksdb::EnvOptions::bytes_per_sync)
+    .def_readwrite("fallocate_with_keep_size", &rocksdb::EnvOptions::fallocate_with_keep_size)
+    .def_readwrite("compaction_readahead_size", &rocksdb::EnvOptions::compaction_readahead_size)
+    .def_readwrite("random_access_max_buffer_size", &rocksdb::EnvOptions::random_access_max_buffer_size)
+    .def_readwrite("writable_file_max_buffer_size", &rocksdb::EnvOptions::writable_file_max_buffer_size);
+
+  py::class_<rocksdb::IngestExternalFileOptions>(m, "IngestExternalFileOptions")
+    .def(py::init<>());
 }

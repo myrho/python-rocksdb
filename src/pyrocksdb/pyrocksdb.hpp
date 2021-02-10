@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <rocksdb/db.h>
 #include <rocksdb/status.h>
 #include <rocksdb/options.h>
@@ -11,6 +12,7 @@
 #include <rocksdb/filter_policy.h>
 #include <rocksdb/cache.h>
 #include <rocksdb/snapshot.h>
+#include <rocksdb/sst_file_writer.h>
 #include <utilities/merge_operators.h>
 #include <rocksdb/utilities/transaction_db.h>
 #include <rocksdb/utilities/transaction.h>
@@ -147,6 +149,7 @@ class py_DB {
     Status CompactRange(const CompactRangeOptions& options, ColumnFamilyHandle* column_family, const Slice* begin, const Slice* end);
 
     Status CompactRange(const CompactRangeOptions& options, const Slice* begin, const Slice* end);
+    Status IngestExternalFile( const std::vector<std::string>& external_files, const IngestExternalFileOptions& options);
 
     void Close();
     py::tuple CreateColumnFamily(const ColumnFamilyOptions& options, const std::string& column_family_name);

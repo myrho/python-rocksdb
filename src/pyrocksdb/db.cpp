@@ -21,7 +21,8 @@ void init_db(py::module & m) {
     .def("compact_range", (Status (py_DB::*) (const CompactRangeOptions& options, const Slice* begin, const Slice* end)) &py_DB::CompactRange)
     .def("close", &py_DB::Close)
     .def("create_column_family", &py_DB::CreateColumnFamily)
-    .def("iterator", &py_DB::NewIterator);
+    .def("iterator", &py_DB::NewIterator)
+    .def("ingest_external_file", &py_DB::IngestExternalFile);
     // .def_readonly("DefaultColumnFamilyName", &rocksdb::kDefaultColumnFamilyName);
   m.attr("DefaultColumnFamilyName") = rocksdb::kDefaultColumnFamilyName;
 

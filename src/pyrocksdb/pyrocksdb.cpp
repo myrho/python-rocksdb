@@ -139,6 +139,11 @@ Status py_DB::CompactRange(const CompactRangeOptions& options, const Slice* begi
     return db_ptr->CompactRange(options, db_ptr->DefaultColumnFamily(), begin, end);
 }
 
+Status py_DB::IngestExternalFile( const std::vector<std::string>& external_files,
+                                  const IngestExternalFileOptions& options) {
+    return db_ptr->IngestExternalFile(external_files, options);
+}
+
 
 py::tuple py_DB::CreateColumnFamily(const ColumnFamilyOptions& options, const std::string& column_family_name) {
   // std::unique_ptr<ColumnFamilyHandleWrapper> cf_handle(new ColumnFamilyHandleWrapper());
@@ -220,6 +225,38 @@ PYBIND11_MODULE(pyrocksdb, m) {
     .def_readwrite("status", &Blob::status)
     // .def_readwrite("data", &Blob::data);
     .def_property_readonly("data", &Blob::get_data);
+
+  py::class_<ExternalSstFileInfo>(m, "ExternalSstFileInfo")
+    .def(py::init<>())
+    .def_readwrite("smallest_key", &rocksdb::ExternalSstFileInfo::smallest_key)
+    .def_readwrite("largest_key", &rocksdb::ExternalSstFileInfo::largest_key);
+
+  py::class_<SstFileWriter>(m, "SstFileWriter")
+    .def(py::init<const EnvOptions&,
+                  const Options&,
+                  ColumnFamilyHandle*,
+                  bool,
+                  Env::IOPriority,
+                  bool>())
+    .def(py::init<const EnvOptions&,
+                  const Options&,
+                  const Comparator*,
+                  ColumnFamilyHandle*,
+                  bool,
+                  Env::IOPriority,
+                  bool>())
+    .def("open", (Status (SstFileWriter::*)(const std::string& file_path)) &SstFileWriter::Open)
+
+    .def("put", (Status (SstFileWriter::*) (const std::string&, const std::string&)) &SstFileWriter::Put)
+    .def("finish", (Status (SstFileWriter::*) (ExternalSstFileInfo*)) &SstFileWriter::Finish);
+
+  py::class_<Env> env(m, "Env");
+
+  py::enum_<Env::IOPriority>(env, "IOPriority")
+      .value("IO_LOW", Env::IOPriority::IO_LOW)
+      .value("IO_HIGH", Env::IOPriority::IO_HIGH)
+      .value("IO_TOTAL", Env::IOPriority::IO_TOTAL)
+      .export_values();
 
   py::class_<ColumnFamilyHandle, py_ColumnFamilyHandle, std::unique_ptr<ColumnFamilyHandle>>(m, "ColumnFamilyHandle")
     .def(py::init<>())
